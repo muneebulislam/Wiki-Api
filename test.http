@@ -1,0 +1,46 @@
+GET http://localhost:3000/articles HTTP/1.1
+
+###
+
+GET http://localhost:3000/articles/foo HTTP/1.1
+
+###
+
+GET http://localhost:3000/articles/new%20content HTTP/1.1
+
+
+###
+POST http://localhost:3000/articles
+Content-Type: application/x-www-form-urlencoded
+
+title=foo
+&content=bar
+
+###
+
+POST http://localhost:3000/articles
+Content-Type: application/x-www-form-urlencoded
+
+title=new content
+&content=some new content found
+
+###
+
+POST http://localhost:3000/articles
+Content-Type: application/x-www-form-urlencoded
+
+title=hello
+&content=world
+
+###
+DELETE http://localhost:3000/articles/del HTTP/1.1
+
+###
+
+PUT http://localhost:3000/articles/new%20content HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+title=changed title
+&content=changed content
+
+###
