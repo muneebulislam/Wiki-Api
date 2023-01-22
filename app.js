@@ -15,7 +15,7 @@ mongoose.connect("mongodb://localhost:27017/wikiDB");
 
 const articleSchema = {
     title: String,
-    constent: String
+    content: String
 }
 
 const Article = mongoose.model('Article', articleSchema)
@@ -31,6 +31,60 @@ app.get("/articles", (req,res) => {
     })
 });
 
+//Get a particular article
+app.route('/articles/:articleTitle')
+.get((req, res) => {
+    Article.findOne({title: req.params.articleTitle}, (err, artcl) => {
+        if(err){console.log(err)}
+        else if(artcl){
+            console.log(artcl.con);
+        } else {
+            console.log("No article found")
+        }
+
+    })
+})
+.put((req, res) => {
+    Article.findOneAndUpdate({title: req.params.articleTitle},
+        {title: req.body.title,
+        content: req.body.content},
+        {overwrite: true},
+        (err) => {
+            if(!err) {
+                console.log("Article updated");
+            } else {
+                console.log(err);
+            }
+        })
+});
+
+
+app.post("/articles", (req, res) => {
+   const article = new Article({
+    title: req.body.title,
+    content: req.body.content
+   });
+   console.log(req.body.title);
+   console.log(req.body.content);
+   article.save((err) => {
+    if (!err) {
+        console.log("Article successfully added into the database!")
+    } else {
+        console.log(err)
+    }
+   });
+});
+
+//delete all the records in the Article collection(=table)
+app.delete("/articles/del", (req, res) => {
+    Article.deleteMany(err=> {
+        if(!err){
+            console.log("Article deleted successfully")
+        } else {
+            console.log(err)
+        }
+    })
+})
 
 
 app.listen(3000,()=>{
