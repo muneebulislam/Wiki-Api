@@ -4,6 +4,8 @@ const path = require('path');
 const https = require('https');
 const ejs = require('ejs');
 const mongoose  = require('mongoose');
+const Article = require('./models/Article');
+const { error } = require('console');
 app.use(express.json()); // for parsing application/json instead of body-parser
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname,'public')))
@@ -13,12 +15,6 @@ app.set('view engine', 'ejs');
 mongoose.set('strictQuery', true);
 mongoose.connect("mongodb://localhost:27017/wikiDB");
 
-const articleSchema = {
-    title: String,
-    content: String
-}
-
-const Article = mongoose.model('Article', articleSchema)
 
 app.get("/articles", (req,res) => {
     // res.sendFile(__dirname+"/index.html");
@@ -44,7 +40,7 @@ app.route('/articles/:articleTitle')
 
     })
 })
-.put((req, res) => {
+.put((req, res) => { //update the entire article 
     Article.findOneAndUpdate({title: req.params.articleTitle},
         {title: req.body.title,
         content: req.body.content},
@@ -56,7 +52,32 @@ app.route('/articles/:articleTitle')
                 console.log(err);
             }
         })
+})
+.patch((req,res)=>{
+    Article.updateOne({title: req.params.articleTitle}, 
+        // updates the only the field that changed and leaves
+        // the unchanged fields as it is
+        {$set: req.body},
+        {overwrite: true},
+        (err) => {
+            if(!err) {
+                console.log("Article patched");
+            } else {
+                console.log(err);
+            }
+        })
+})
+.delete((req,res)=>{
+    Article.deleteMany({title: req.params.articleTitle},
+        {multi: true}, function(err) {
+            if (err) {
+              console.log(error)
+            } else {
+              console.log("successfully deleted")
+            }
 });
+})
+;
 
 
 app.post("/articles", (req, res) => {
